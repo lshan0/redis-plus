@@ -1,3 +1,5 @@
+import handlers.ClientHandler;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -18,10 +20,8 @@ public class Main {
           serverSocket.setReuseAddress(true);
           // Wait for connection from client.
           clientSocket = serverSocket.accept();
-          for (int i = 0; i < 2; i++) {
-              OutputStream outputStream = clientSocket.getOutputStream();
-              outputStream.write("+PONG\r\n".getBytes());
-          }
+          ClientHandler clientHandler = new ClientHandler();
+          clientHandler.handle(clientSocket);
         } catch (IOException e) {
           System.out.println("IOException: " + e.getMessage());
         } finally {
