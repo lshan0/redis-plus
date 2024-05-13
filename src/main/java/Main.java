@@ -23,7 +23,7 @@ public class Main {
             // Wait for connection from client.
             ExecutorService executorService = Executors.newCachedThreadPool();
             while (!serverSocket.isClosed()) {
-                executorService.execute(new ClientHandler(clientSocket));
+                executorService.execute(new ClientHandler(serverSocket.accept()));
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
