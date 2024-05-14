@@ -12,6 +12,7 @@ public class ECHOHandler implements IHandler {
     public int handle(BufferedReader reader, BufferedWriter writer) throws IOException {
         String message = ArgUtils.readArg(reader);
         writer.write(ArgUtils.toRedisProtocolMessage(message));
+        writer.flush();
         return 1;
     }
 }
