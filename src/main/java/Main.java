@@ -1,7 +1,6 @@
-import handlers.ClientHandler;
+import runners.ClientHandlerRunner;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +22,7 @@ public class Main {
             // Wait for connection from client.
             ExecutorService executorService = Executors.newCachedThreadPool();
             while (!serverSocket.isClosed()) {
-                executorService.execute(new ClientHandler(serverSocket.accept()));
+                executorService.execute(new ClientHandlerRunner(serverSocket.accept()));
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
