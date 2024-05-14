@@ -1,0 +1,26 @@
+package memory;
+
+import java.time.Instant;
+
+public class CacheValue {
+    private String value;
+    private Instant addedTime;
+    private Integer expirationTime;
+
+    public CacheValue(String value, Integer expirationTime) {
+        this.addedTime = Instant.now();
+        this.value = value;
+        this.expirationTime = expirationTime;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public boolean isExpired() {
+        if (expirationTime == -1) {
+            return false;
+        }
+        return Instant.now().isAfter(addedTime.plusMillis(expirationTime));
+    }
+}

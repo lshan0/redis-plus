@@ -3,15 +3,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CacheDB implements Database {
-    Map<String, String> cache = new HashMap<>();
+    Map<String, CacheValue> cache = new HashMap<>();
 
     @Override
-    public void set(String key, String value) {
+    public void set(String key, CacheValue value) {
         cache.put(key, value);
     }
 
     @Override
     public String get(String key) {
-        return cache.getOrDefault(key, null);
+        CacheValue value = cache.getOrDefault(key, null);
+        if (value != null && value.isExpired()) {
+            cache.remove(key);
+            return null;
+        }
+        return value == null ? null : value.getValue();
     }
 }

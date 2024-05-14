@@ -34,7 +34,7 @@ public class ClientHandlerRunner implements Runnable {
                     }
                     String instruction = readArg(reader);
                     int readArg = 1;
-                    readArg += HandlerFactory.getInstance().createHandler(instruction).handle(reader, writer);
+                    readArg += HandlerFactory.getInstance().createHandler(instruction).handle(reader, writer, argNumber - readArg);
                     if (readArg < argNumber) {
                         throw new IllegalStateException("There are some args that should be read");
                     }

@@ -8,6 +8,6 @@ import java.io.IOException;
 
 public interface IHandler {
 
-    int handle(BufferedReader reader, BufferedWriter writer) throws IOException;
+    int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException;
 
 }

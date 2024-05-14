@@ -1,5 +1,6 @@
 package handlers;
 
+import memory.CacheValue;
 import memory.DatabaseManager;
 import utils.ArgUtils;
 
@@ -8,14 +9,24 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class SETHandler implements IHandler {
+    private static final String PX = "PX";
 
     @Override
-    public int handle(BufferedReader reader, BufferedWriter writer) throws IOException {
+    public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
         String key = ArgUtils.readArg(reader);
         String value = ArgUtils.readArg(reader);
-        DatabaseManager.DEFAULT_DB.set(key, value);
+        Integer usedArgs = 2;
+        int expirationTime = -1;
+        if (remainedArgs > 2) {
+            ++usedArgs;
+            if (PX.equalsIgnoreCase(ArgUtils.readArg(reader))) {
+                expirationTime = Integer.parseInt(ArgUtils.readArg(reader));
+                ++usedArgs;
+            }
+        }
+        DatabaseManager.DEFAULT_DB.set(key, new CacheValue(value, expirationTime));
         writer.write("+OK\r\n");
         writer.flush();
-        return 2;
+        return usedArgs;
     }
 }

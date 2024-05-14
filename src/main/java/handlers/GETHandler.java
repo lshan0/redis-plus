@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GETHandler implements IHandler {
 
     @Override
-    public int handle(BufferedReader reader, BufferedWriter writer) throws IOException {
+    public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
         String key = ArgUtils.readArg(reader);
         writer.write(ArgUtils.toRedisProtocolMessage(DatabaseManager.DEFAULT_DB.get(key)));
         writer.flush();
