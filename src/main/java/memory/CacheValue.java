@@ -3,9 +3,9 @@ package memory;
 import java.time.Instant;
 
 public class CacheValue {
-    private String value;
-    private Instant addedTime;
-    private Integer expirationTime;
+    private final String value;
+    private final Instant addedTime;
+    private final Integer expirationTime;
 
     public CacheValue(String value, Integer expirationTime) {
         this.addedTime = Instant.now();
