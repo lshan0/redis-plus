@@ -1,4 +1,6 @@
+import common.Info;
 import common.NodeManager;
+import common.Role;
 import runners.ClientHandlerRunner;
 
 import java.io.IOException;
@@ -22,10 +24,10 @@ public class Main {
         if (argsList.contains("--port")) {
             port = Integer.parseInt(argsList.get(argsList.indexOf("--port") + 1));
         }
+        initNode(argsList);
         try {
             serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);
-            NodeManager.initMetaData();
             // Wait for connection from client.
             ExecutorService executorService = Executors.newCachedThreadPool();
             while (!serverSocket.isClosed()) {
@@ -41,6 +43,14 @@ public class Main {
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
             }
+        }
+    }
+
+    private static void initNode(List<String> argsList) {
+        NodeManager.initMetaData();
+        if (argsList.contains("--replicaof")) {
+            String masterHostAndPort = argsList.get(argsList.indexOf("--replicaof") + 1);
+            NodeManager.metaData.setInfo(Info.ROLE, Role.SLAVE);
         }
     }
 }
