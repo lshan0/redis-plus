@@ -5,6 +5,7 @@ public class HandlerFactory {
     public static final String ECHO = "ECHO";
     public static final String SET = "SET";
     public static final String GET = "GET";
+    public static final String INFO = "INFO";
 
     public static HandlerFactory getInstance() {
         return new HandlerFactory();
@@ -23,6 +24,8 @@ public class HandlerFactory {
             return new GETHandler();
         } else if (SET.equalsIgnoreCase(instruction)) {
             return new SETHandler();
+        } else if (INFO.equalsIgnoreCase(instruction)) {
+            return new InfoManager();
         }
         throw new IllegalArgumentException();
     }

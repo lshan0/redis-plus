@@ -1,7 +1,7 @@
 package handlers;
 
+import common.NodeManager;
 import memory.CacheValue;
-import memory.DatabaseManager;
 import utils.ArgUtils;
 
 import java.io.BufferedReader;
@@ -24,7 +24,7 @@ public class SETHandler implements IHandler {
                 ++usedArgs;
             }
         }
-        DatabaseManager.DEFAULT_DB.set(key, new CacheValue(value, expirationTime));
+        NodeManager.DEFAULT_DB.set(key, new CacheValue(value, expirationTime));
         writer.write("+OK\r\n");
         writer.flush();
         return usedArgs;

@@ -1,3 +1,4 @@
+import common.NodeManager;
 import runners.ClientHandlerRunner;
 
 import java.io.IOException;
@@ -23,9 +24,8 @@ public class Main {
         }
         try {
             serverSocket = new ServerSocket(port);
-            // Since the tester restarts your program quite often, setting SO_REUSEADDR
-            // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
+            NodeManager.initMetaData();
             // Wait for connection from client.
             ExecutorService executorService = Executors.newCachedThreadPool();
             while (!serverSocket.isClosed()) {
