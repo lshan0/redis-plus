@@ -2,8 +2,9 @@ import common.Info;
 import common.NodeManager;
 import common.Role;
 import runners.ClientHandlerRunner;
+import utils.ArgUtils;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
 
@@ -46,14 +47,26 @@ public class Main {
         }
     }
 
-    private static void initNode(List<String> argsList) {
+    private static void initNode(List<String> argsList) throws IOException{
         if (argsList.contains("--replicaof")) {
             String masterHostAndPort = argsList.get(argsList.indexOf("--replicaof") + 1);
+            String[] hostAndPort = masterHostAndPort.split(" +");
+            try (Socket masterConnection = new Socket(hostAndPort[0], Integer.parseInt(hostAndPort[1]))) {
+                handshakeMaster(masterConnection);
+            }
             NodeManager.metaData.setInfo(Info.ROLE, Role.SLAVE);
         } else {
             NodeManager.metaData.setInfo(Info.ROLE, Role.MASTER);
             NodeManager.metaData.setInfo(Info.MASTER_REPLID, "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb");
             NodeManager.metaData.setInfo(Info.MASTER_REPL_OFFSET, "0");
         }
+    }
+
+    private static void handshakeMaster(Socket masterConnection) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(masterConnection.getInputStream()));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(masterConnection.getOutputStream()));
+        writer.write(ArgUtils.toPackage(List.of("PING")));
+        writer.flush();
+        String line = reader.readLine();
     }
 }
