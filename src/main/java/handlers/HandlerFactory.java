@@ -25,7 +25,7 @@ public class HandlerFactory {
         } else if (SET.equalsIgnoreCase(instruction)) {
             return new SETHandler();
         } else if (INFO.equalsIgnoreCase(instruction)) {
-            return new InfoManager();
+            return new InfoHandler();
         }
         throw new IllegalArgumentException();
     }
