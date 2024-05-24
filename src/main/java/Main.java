@@ -47,7 +47,6 @@ public class Main {
     }
 
     private static void initNode(List<String> argsList) {
-        NodeManager.initMetaData();
         if (argsList.contains("--replicaof")) {
             String masterHostAndPort = argsList.get(argsList.indexOf("--replicaof") + 1);
             NodeManager.metaData.setInfo(Info.ROLE, Role.SLAVE);
