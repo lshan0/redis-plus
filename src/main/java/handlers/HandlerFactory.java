@@ -6,6 +6,7 @@ public class HandlerFactory {
     public static final String SET = "SET";
     public static final String GET = "GET";
     public static final String INFO = "INFO";
+    public static final String REPLCONF = "REPLCONF";
 
     public static HandlerFactory getInstance() {
         return new HandlerFactory();
@@ -26,6 +27,8 @@ public class HandlerFactory {
             return new SETHandler();
         } else if (INFO.equalsIgnoreCase(instruction)) {
             return new InfoHandler();
+        } else if (REPLCONF.equalsIgnoreCase(instruction)) {
+            return new ReplConfigHandler();
         }
         throw new IllegalArgumentException();
     }

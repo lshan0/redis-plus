@@ -13,13 +13,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
+
+    public static int port = 6379;
+
     public static void main(String[] args) throws IOException {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
 
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
-        int port = 6379;
 
         List<String> argsList = new ArrayList<>(List.of(args));
         if (argsList.contains("--port")) {
@@ -65,8 +67,20 @@ public class Main {
     private static void handshakeMaster(Socket masterConnection) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(masterConnection.getInputStream()));
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(masterConnection.getOutputStream()));
+        String responseLine = null;
         writer.write(ArgUtils.toPackage(List.of("PING")));
         writer.flush();
-        String line = reader.readLine();
+        responseLine = reader.readLine();
+        assert responseLine.equalsIgnoreCase("+PONG");
+
+        writer.write(ArgUtils.toPackage(List.of("REPLCONF", "listening-port", "6380")));
+        writer.flush();
+        responseLine = reader.readLine();
+        assert "+OK".equalsIgnoreCase(responseLine);
+
+        writer.write(ArgUtils.toPackage(List.of("REPLCONF", "capa", "psync2")));
+        writer.flush();
+        responseLine = reader.readLine();
+        assert "+OK".equalsIgnoreCase(responseLine);
     }
 }
