@@ -28,6 +28,7 @@ public class ArgUtils {
         return "*" + commands.size() + "\r\n" +
                 commands.stream()
                         .map(command -> toRedisProtocolMessage(command, false))
-                        .collect(Collectors.joining("\r\n")) + "\r\r";
+                        .collect(Collectors.joining("\r\n")) +
+                "\r\n";
     }
 }
