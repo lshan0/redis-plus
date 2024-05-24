@@ -51,6 +51,10 @@ public class Main {
         if (argsList.contains("--replicaof")) {
             String masterHostAndPort = argsList.get(argsList.indexOf("--replicaof") + 1);
             NodeManager.metaData.setInfo(Info.ROLE, Role.SLAVE);
+        } else {
+            NodeManager.metaData.setInfo(Info.ROLE, Role.MASTER);
+            NodeManager.metaData.setInfo(Info.MASTER_REPLID, "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb");
+            NodeManager.metaData.setInfo(Info.MASTER_REPL_OFFSET, "0");
         }
     }
 }

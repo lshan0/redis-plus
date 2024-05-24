@@ -3,7 +3,9 @@ package common;
 import java.util.Locale;
 
 public enum Info {
-    ROLE;
+    ROLE,
+    MASTER_REPLID,
+    MASTER_REPL_OFFSET;
 
     @Override
     public String toString() {
