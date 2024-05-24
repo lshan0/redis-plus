@@ -67,20 +67,42 @@ public class Main {
     private static void handshakeMaster(Socket masterConnection) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(masterConnection.getInputStream()));
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(masterConnection.getOutputStream()));
-        String responseLine = null;
-        writer.write(ArgUtils.toPackage(List.of("PING")));
-        writer.flush();
-        responseLine = reader.readLine();
-        assert responseLine.equalsIgnoreCase("+PONG");
+        checkMaster(writer, reader);
+        replConfigStep(writer, reader);
+        psyncMasterStep(writer, reader);
+    }
 
-        writer.write(ArgUtils.toPackage(List.of("REPLCONF", "listening-port", "6380")));
+    private static void checkMaster(BufferedWriter writer, BufferedReader reader) throws IOException {
+        String reponseLine;
+        reponseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("PING")));
+        assert reponseLine.equalsIgnoreCase("+PONG");
+    }
+
+    private static String sendPackage(BufferedWriter writer, BufferedReader reader, String message) throws IOException {
+        String responseLine;
+        writer.write(message);
         writer.flush();
+        
         responseLine = reader.readLine();
         assert "+OK".equalsIgnoreCase(responseLine);
+        return responseLine;
+    }
 
-        writer.write(ArgUtils.toPackage(List.of("REPLCONF", "capa", "psync2")));
-        writer.flush();
-        responseLine = reader.readLine();
-        assert "+OK".equalsIgnoreCase(responseLine);
+    private static void replConfigStep(BufferedWriter writer, BufferedReader reader) throws IOException {
+        String reponseLine;
+        reponseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("REPLCONF", "listening-port", String.valueOf(port))));
+        assert "+OK".equalsIgnoreCase(reponseLine);
+
+        reponseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("REPLCONF", "capa", "psync2")));
+        assert "+OK".equalsIgnoreCase(reponseLine);
+    }
+
+    private static void psyncMasterStep(BufferedWriter writer, BufferedReader reader) throws IOException {
+        String responseLine;
+        responseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("PSYNC", "?", "-1")));
+
+        String[] values = responseLine.split(" +");
+        NodeManager.metaData.setInfo(Info.MASTER_REPLID, values[1]);
+        NodeManager.metaData.setInfo(Info.MASTER_REPL_OFFSET, values[2]);
     }
 }
