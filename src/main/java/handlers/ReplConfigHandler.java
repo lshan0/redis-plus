@@ -24,6 +24,7 @@ public class ReplConfigHandler implements IHandler {
         }
 
         writer.write("+OK\r\n");
+        writer.flush();
         return 2;
     }
 }
