@@ -12,6 +12,10 @@ public class MetaData {
         this.info.put(info, value);
     }
 
+    public Object getInfo(Info info) {
+        return this.info.get(info);
+    }
+
     @Override
     public String toString() {
         return this.info.entrySet()

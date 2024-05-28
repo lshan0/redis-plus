@@ -14,6 +14,7 @@ public class ReplConfigHandler implements IHandler {
 
     @Override
     public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
+        Integer usedArgs = 2;
         String configType = ArgUtils.readArg(reader);
         if (LISTENING_PORT.equalsIgnoreCase(configType)) {
             Integer replicaPort = Integer.valueOf(ArgUtils.readArg(reader));
@@ -23,8 +24,12 @@ public class ReplConfigHandler implements IHandler {
             String capa = ArgUtils.readArg(reader);
         }
 
-        writer.write("+OK\r\n");
-        writer.flush();
-        return 2;
+        if (remainedArgs - 2 > 0) {
+            usedArgs += handle(reader, writer, remainedArgs - 2);
+        } else {
+            writer.write("+OK\r\n");
+            writer.flush();
+        }
+        return usedArgs;
     }
 }

@@ -7,6 +7,7 @@ public class HandlerFactory {
     public static final String GET = "GET";
     public static final String INFO = "INFO";
     public static final String REPLCONF = "REPLCONF";
+    public static final String PSYNC = "PSYNC";
 
     public static HandlerFactory getInstance() {
         return new HandlerFactory();
@@ -29,6 +30,8 @@ public class HandlerFactory {
             return new InfoHandler();
         } else if (REPLCONF.equalsIgnoreCase(instruction)) {
             return new ReplConfigHandler();
+        } else if (PSYNC.equalsIgnoreCase(instruction)) {
+            return new PSYNCHandler();
         }
         throw new IllegalArgumentException();
     }
