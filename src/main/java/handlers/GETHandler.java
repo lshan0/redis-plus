@@ -1,19 +1,16 @@
 package handlers;
 
 import common.NodeManager;
-import utils.ArgUtils;
+import utils.ProtocolUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class GETHandler implements IHandler {
 
     @Override
-    public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
-        String key = ArgUtils.readArg(reader);
-        writer.write(ArgUtils.toRedisProtocolMessage(NodeManager.DEFAULT_DB.get(key)));
-        writer.flush();
+    public int handle(OutputStream out, InputStream in, Integer remainedArgs) throws IOException {
+        String key = ProtocolUtils.readString(in);
+        ProtocolUtils.writesMessage(out, NodeManager.DEFAULT_DB.get(key));
         return 1;
     }
 }

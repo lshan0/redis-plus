@@ -1,10 +1,8 @@
 package handlers;
 
-import utils.ArgUtils;
+import utils.ProtocolUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class ReplConfigHandler implements IHandler {
 
@@ -13,22 +11,22 @@ public class ReplConfigHandler implements IHandler {
 
 
     @Override
-    public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
+    public int handle(OutputStream out, InputStream in, Integer remainedArgs) throws IOException {
         Integer usedArgs = 2;
-        String configType = ArgUtils.readArg(reader);
+        String configType = ProtocolUtils.readString(in);
         if (LISTENING_PORT.equalsIgnoreCase(configType)) {
-            Integer replicaPort = Integer.valueOf(ArgUtils.readArg(reader));
+            Integer replicaPort = Integer.valueOf(ProtocolUtils.readString(in));
         }
 
         if (CAPA.equalsIgnoreCase(configType)) {
-            String capa = ArgUtils.readArg(reader);
+            String capa = ProtocolUtils.readString(in);
         }
 
         if (remainedArgs - 2 > 0) {
-            usedArgs += handle(reader, writer, remainedArgs - 2);
+            usedArgs += handle(out, in, remainedArgs - 2);
         } else {
-            writer.write("+OK\r\n");
-            writer.flush();
+            out.write("+OK\r\n".getBytes());
+            out.flush();
         }
         return usedArgs;
     }

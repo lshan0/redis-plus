@@ -1,15 +1,14 @@
 package handlers;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class PINGHandler implements IHandler {
 
     @Override
-    public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
-        writer.write("+PONG\r\n");
-        writer.flush();
+    public int handle(OutputStream out, InputStream in, Integer remainedArgs) throws IOException {
+        out.write("+PONG\r\n".getBytes());
+        out.flush();
         return 0;
+
     }
 }

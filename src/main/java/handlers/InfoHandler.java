@@ -1,24 +1,21 @@
 package handlers;
 
 import common.NodeManager;
-import utils.ArgUtils;
+import utils.ProtocolUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class InfoHandler implements IHandler{
 
     private static final String REPLICATION = "replication";
 
     @Override
-    public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
-        String infoTarget = ArgUtils.readArg(reader);
+    public int handle(OutputStream out, InputStream in, Integer remainedArgs) throws IOException {
+        String infoTarget = ProtocolUtils.readString(in);
+
         if (REPLICATION.equalsIgnoreCase(infoTarget)) {
-            writer.write(
-                    ArgUtils.toRedisProtocolMessage(NodeManager.metaData.toString()));
+            ProtocolUtils.writesMessage(out, NodeManager.metaData.toString());
         }
-        writer.flush();
         return 1;
     }
 }

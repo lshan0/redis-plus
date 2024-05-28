@@ -1,11 +1,11 @@
 package runners;
 
 import handlers.HandlerFactory;
+import utils.ProtocolUtils;
 
 import java.io.*;
 import java.net.Socket;
 
-import static utils.ArgUtils.readArg;
 
 public class ClientHandlerRunner implements Runnable {
 
@@ -23,7 +23,9 @@ public class ClientHandlerRunner implements Runnable {
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(clientSocket.getOutputStream()));
             while (clientSocket.isConnected()) {
-                String line = reader.readLine();
+                InputStream in = clientSocket.getInputStream();
+                OutputStream out = clientSocket.getOutputStream();
+                String line = ProtocolUtils.readStringLine(in);
                 if (line == null) {
                     break;
                 }
@@ -32,9 +34,9 @@ public class ClientHandlerRunner implements Runnable {
                     if (argNumber == 0) {
                         break;
                     }
-                    String instruction = readArg(reader);
+                    String instruction = ProtocolUtils.readString(in);
                     int readArg = 1;
-                    readArg += HandlerFactory.getInstance().createHandler(instruction).handle(reader, writer, argNumber - readArg);
+                    readArg += HandlerFactory.getInstance().createHandler(instruction).handle(out, in,argNumber - readArg);
                     if (readArg < argNumber) {
                         throw new IllegalStateException("There are some args that should be read");
                     }

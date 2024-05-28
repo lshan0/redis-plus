@@ -2,7 +2,7 @@ import common.Info;
 import common.NodeManager;
 import common.Role;
 import runners.ClientHandlerRunner;
-import utils.ArgUtils;
+import utils.ProtocolUtils;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -65,44 +65,42 @@ public class Main {
     }
 
     private static void handshakeMaster(Socket masterConnection) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(masterConnection.getInputStream()));
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(masterConnection.getOutputStream()));
-        checkMaster(writer, reader);
-        replConfigStep(writer, reader);
-        psyncMasterStep(writer, reader);
+        InputStream in = masterConnection.getInputStream();
+        OutputStream out = masterConnection.getOutputStream();
+        checkMaster(out, in);
+        replConfigStep(out, in);
+        psyncMasterStep(out, in);
+
     }
 
-    private static void checkMaster(BufferedWriter writer, BufferedReader reader) throws IOException {
-        String reponseLine;
-        reponseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("PING")));
-        assert reponseLine.equalsIgnoreCase("+PONG");
+    private static void checkMaster(OutputStream out, InputStream in) throws IOException {
+        String responseLine = sendPackage(out, in, List.of("PING"));
+        if (!"+PONG".equalsIgnoreCase(responseLine)) {
+            throw new IllegalStateException();
+        }
     }
 
-    private static String sendPackage(BufferedWriter writer, BufferedReader reader, String message) throws IOException {
-        String responseLine;
-        writer.write(message);
-        writer.flush();
-        
-        responseLine = reader.readLine();
-        assert "+OK".equalsIgnoreCase(responseLine);
+    private static String sendPackage(OutputStream out, InputStream in, List<String> messages) throws IOException {
+        ProtocolUtils.writeStringPackage(out, messages, true);
+        String responseLine = ProtocolUtils.readStringLine(in);
         return responseLine;
     }
 
-    private static void replConfigStep(BufferedWriter writer, BufferedReader reader) throws IOException {
-        String reponseLine;
-        reponseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("REPLCONF", "listening-port", String.valueOf(port))));
+    private static void replConfigStep(OutputStream out, InputStream in) throws IOException {
+        String reponseLine = sendPackage(out, in, List.of("REPLCONF", "listening-port", String.valueOf(port)));
         assert "+OK".equalsIgnoreCase(reponseLine);
 
-        reponseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("REPLCONF", "capa", "psync2")));
+        reponseLine = sendPackage(out, in, List.of("REPLCONF", "capa", "psync2"));
         assert "+OK".equalsIgnoreCase(reponseLine);
     }
 
-    private static void psyncMasterStep(BufferedWriter writer, BufferedReader reader) throws IOException {
-        String responseLine;
-        responseLine = sendPackage(writer, reader, ArgUtils.toPackage(List.of("PSYNC", "?", "-1")));
-
+    private static void psyncMasterStep(OutputStream out, InputStream in) throws IOException {
+        String responseLine = sendPackage(out, in, List.of("PSYNC", "?", "-1"));
         String[] values = responseLine.split(" +");
         NodeManager.metaData.setInfo(Info.MASTER_REPLID, values[1]);
         NodeManager.metaData.setInfo(Info.MASTER_REPL_OFFSET, values[2]);
+        if ("+FULLRESYNC".equalsIgnoreCase(values[0])) {
+            // TODO
+        }
     }
 }

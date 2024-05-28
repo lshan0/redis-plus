@@ -1,18 +1,15 @@
 package handlers;
 
-import utils.ArgUtils;
+import utils.ProtocolUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class ECHOHandler implements IHandler {
 
     @Override
-    public int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException {
-        String message = ArgUtils.readArg(reader);
-        writer.write(ArgUtils.toRedisProtocolMessage(message));
-        writer.flush();
+    public int handle(OutputStream out, InputStream in, Integer remainedArgs) throws IOException {
+        String message = ProtocolUtils.readString(in);
+        ProtocolUtils.writesMessage(out, message);
         return 1;
     }
 }

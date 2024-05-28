@@ -1,13 +1,10 @@
 package handlers;
 
-import java.io.BufferedReader;
-
-import java.io.BufferedWriter;
-
-import java.io.IOException;
+import java.io.*;
 
 public interface IHandler {
 
-    int handle(BufferedReader reader, BufferedWriter writer, Integer remainedArgs) throws IOException;
+
+    int handle(OutputStream out, InputStream in, Integer remainedArgs) throws IOException;
 
 }
